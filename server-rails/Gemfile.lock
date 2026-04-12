@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/agentcode-dev/server-rails.git
-  revision: aba86e6d2bb99ce251ad34a623fbf3c6315a8922
+  revision: 5283682ba2ea54646c63902d92ba49e68a151ffe
   branch: main
   specs:
     agentcode (0.9.0)
