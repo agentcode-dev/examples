@@ -1,58 +1,222 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TaskFlow - AgentCode Laravel Template
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A multi-tenant task management API built with [AgentCode](https://github.com/agentcode-dev/server-laravel) on Laravel. This project serves as a reference implementation showing how to build a full-featured REST API using AgentCode's Blueprint system.
 
-## About Laravel
+## Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Multi-tenant architecture with Organizations
+- Role-based access control (owner, admin, manager, member, viewer)
+- Per-role field visibility (hidden columns)
+- Per-role field editability (permitted attributes)
+- Auto-scoped queries (members only see assigned tasks)
+- Soft deletes with trash/restore/force-delete
+- Audit trail on Projects and Tasks
+- UUID primary keys on Comments
+- Many-to-many relationships (Tasks <-> Labels)
+- Nested operations (atomic multi-model transactions)
+- Comprehensive Pest test suite
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.2+
+- Composer
+- SQLite (default) or PostgreSQL/MySQL
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Setup
 
 ```bash
-composer require laravel/boost --dev
+# 1. Install dependencies
+composer install
 
-php artisan boost:install
+# 2. Copy environment file
+cp .env.example .env
+
+# 3. Generate application key
+php artisan key:generate
+
+# 4. Run migrations and seed data
+php artisan migrate:fresh --seed
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+## Seed Data
 
-## Contributing
+The seeder creates the following test data:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| User | Email | Role | Organization |
+|------|-------|------|--------------|
+| Alice Johnson | alice@acme.com | admin | Acme Corp |
+| Bob Smith | bob@acme.com | manager | Acme Corp |
+| Carol Williams | carol@acme.com | member | Acme Corp |
+| Dave Brown | dave@acme.com | viewer | Acme Corp |
+| Eve Davis | eve@globex.com | admin | Globex Inc |
 
-## Code of Conduct
+Default password for all users: `password`
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Running the Server
 
-## Security Vulnerabilities
+```bash
+php artisan serve --port=8001
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## API Usage
 
-## License
+### Authentication
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```bash
+# Login
+curl -s -X POST http://localhost:8001/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"alice@acme.com","password":"password"}'
+
+# Response: { "token": "1|abc123..." }
+```
+
+### CRUD Operations
+
+All tenant-scoped endpoints use the pattern: `/api/{organization_id}/{resource}`
+
+```bash
+TOKEN="your-token-here"
+ORG_ID=1
+
+# List projects
+curl -s http://localhost:8001/api/$ORG_ID/projects \
+  -H "Authorization: Bearer $TOKEN"
+
+# Create a project
+curl -s -X POST http://localhost:8001/api/$ORG_ID/projects \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"New Project","status":"draft"}'
+
+# Show a project
+curl -s http://localhost:8001/api/$ORG_ID/projects/1 \
+  -H "Authorization: Bearer $TOKEN"
+
+# Update a project
+curl -s -X PUT http://localhost:8001/api/$ORG_ID/projects/1 \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title":"Updated Project","status":"active"}'
+
+# Delete a project (soft delete)
+curl -s -X DELETE http://localhost:8001/api/$ORG_ID/projects/1 \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### Soft Deletes
+
+```bash
+# View trashed items
+curl -s http://localhost:8001/api/$ORG_ID/projects/trashed \
+  -H "Authorization: Bearer $TOKEN"
+
+# Restore
+curl -s -X POST http://localhost:8001/api/$ORG_ID/projects/1/restore \
+  -H "Authorization: Bearer $TOKEN"
+
+# Force delete (permanent)
+curl -s -X DELETE http://localhost:8001/api/$ORG_ID/projects/1/force-delete \
+  -H "Authorization: Bearer $TOKEN"
+```
+
+### Nested Operations
+
+Create or update multiple resources in a single atomic transaction:
+
+```bash
+curl -s -X POST http://localhost:8001/api/$ORG_ID/nested \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "operations": [
+      {"model": "tasks", "action": "create", "data": {"title": "Task 1", "status": "todo", "priority": "high", "project_id": 1}},
+      {"model": "tasks", "action": "create", "data": {"title": "Task 2", "status": "todo", "priority": "low", "project_id": 1}}
+    ]
+  }'
+```
+
+## Running Tests
+
+```bash
+# Run all tests
+php artisan test
+
+# Run only feature tests
+php artisan test tests/Feature/
+
+# Run specific test file
+php artisan test tests/Feature/ProjectTest.php
+```
+
+## Project Structure
+
+```
+app/
+  Models/
+    Organization.php    # Root tenant (created by agentcode:install)
+    Role.php            # Role definitions (owner/admin/manager/member/viewer)
+    UserRole.php        # Pivot: user <-> role <-> organization
+    User.php            # Updated with HasPermissions trait
+    Project.php         # Direct tenant (has organization_id)
+    Task.php            # Indirect tenant (via project -> organization)
+    Comment.php         # UUID primary keys, auto-set user_id
+    Label.php           # $exceptActions = ['forceDelete']
+    Scopes/
+      TaskScope.php     # Members/viewers only see assigned tasks
+  Policies/
+    ProjectPolicy.php   # Role-based field visibility and editability
+    TaskPolicy.php
+    CommentPolicy.php
+    LabelPolicy.php
+config/
+  agentcode.php         # Model registration and route groups
+.agentcode/
+  blueprints/
+    _roles.yaml         # Global role definitions
+    projects.yaml       # Project blueprint with permissions
+    tasks.yaml          # Task blueprint with permissions
+    comments.yaml       # Comment blueprint with permissions
+    labels.yaml         # Label blueprint with permissions
+database/
+  migrations/           # All table definitions
+  factories/            # Model factories for testing
+  seeders/
+    DatabaseSeeder.php  # Complete seed data
+tests/
+  Feature/
+    AuthTest.php        # Login, logout, invalid credentials
+    ProjectTest.php     # CRUD, hidden columns, role validation, cross-org isolation
+    TaskTest.php        # CRUD, TaskScope, hidden columns, member restrictions
+    CommentTest.php     # UUID, auto-set user_id, role access
+    LabelTest.php       # CRUD, force-delete disabled, org isolation
+    SoftDeleteTest.php  # Trash, restore, force-delete
+    NestedOperationTest.php  # Atomic transactions
+```
+
+## Role Permissions Matrix
+
+| Action | owner | admin | manager | member | viewer |
+|--------|-------|-------|---------|--------|--------|
+| **Projects** | | | | | |
+| index/show | yes | yes | yes | yes | yes |
+| store/update | yes | yes | yes | -- | -- |
+| destroy | yes | yes | -- | -- | -- |
+| See budget | yes | yes | yes | -- | -- |
+| See internal_notes | yes | yes | -- | -- | -- |
+| **Tasks** | | | | | |
+| index/show | all | all | all | assigned | assigned |
+| store | yes | yes | yes | -- | -- |
+| update | all fields | all fields | all fields | status, description | -- |
+| destroy | yes | yes | -- | -- | -- |
+| See estimated_hours | yes | yes | yes | -- | -- |
+| **Comments** | | | | | |
+| index/show | yes | yes | yes | yes | yes |
+| store | yes | yes | yes | yes | -- |
+| update (body) | yes | yes | yes | yes | -- |
+| destroy | yes | yes | yes | -- | -- |
+| **Labels** | | | | | |
+| index/show | yes | yes | yes | yes | yes |
+| store/update | yes | yes | yes | -- | -- |
+| destroy | yes | yes | -- | -- | -- |
+| forceDelete | -- | -- | -- | -- | -- |
