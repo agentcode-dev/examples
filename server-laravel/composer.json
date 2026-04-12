@@ -7,6 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
+        "agentcode/agentcode": "dev-main",
         "laravel/framework": "^13.0",
         "laravel/tinker": "^3.0"
     },
@@ -81,5 +82,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [{
+        "name": "agentcode",
+        "type": "vcs",
+        "url": "https://github.com/agentcode-dev/server-laravel.git"
+    }]
 }
