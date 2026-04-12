@@ -3,18 +3,23 @@
 namespace App\Models;
 
 use AgentCode\Models\AgentCodeModel;
-// use AgentCode\Traits\HasAuditTrail;
-// use AgentCode\Traits\HasUuid;
-// use AgentCode\Traits\BelongsToOrganization;
+use AgentCode\Traits\HasUuid;
 use App\Models\Task;
 use App\Models\User;
 
 
 class Comment extends AgentCodeModel
 {
-    // use HasAuditTrail;
-    // use HasUuid;
-    // use BelongsToOrganization;
+    use HasUuid;
+
+    protected static function booted(): void
+    {
+        static::creating(function (Comment $comment) {
+            if (auth()->check() && !$comment->user_id) {
+                $comment->user_id = auth()->id();
+            }
+        });
+    }
 
     protected $fillable = [
             'body',

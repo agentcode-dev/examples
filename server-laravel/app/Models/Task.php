@@ -3,18 +3,14 @@
 namespace App\Models;
 
 use AgentCode\Models\AgentCodeModel;
-// use AgentCode\Traits\HasAuditTrail;
-// use AgentCode\Traits\HasUuid;
-// use AgentCode\Traits\BelongsToOrganization;
+use AgentCode\Traits\HasAuditTrail;
 use App\Models\Project;
 use App\Models\User;
 
 
 class Task extends AgentCodeModel
 {
-    // use HasAuditTrail;
-    // use HasUuid;
-    // use BelongsToOrganization;
+    use HasAuditTrail;
 
     protected $fillable = [
             'title',
@@ -85,10 +81,9 @@ class Task extends AgentCodeModel
     // protected $perPage = 25;
 
     // ---------------------------------------------------------------
-    // Middleware (uncomment to add per-model middleware)
+    // Middleware
     // ---------------------------------------------------------------
-    // public static array $middleware = [];
-    // public static array $middlewareActions = [];
+    public static array $middlewareActions = ['store' => ['throttle:60,1']];
 
     // ---------------------------------------------------------------
     // Exclude actions (uncomment to disable specific CRUD endpoints)
@@ -119,5 +114,8 @@ class Task extends AgentCodeModel
         return $this->hasMany(Comment::class);
     }
 
-
+    public function labels(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Label::class, 'task_labels');
+    }
 }

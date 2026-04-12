@@ -63,13 +63,16 @@ class Label extends AgentCodeModel
     // public static array $middlewareActions = [];
 
     // ---------------------------------------------------------------
-    // Exclude actions (uncomment to disable specific CRUD endpoints)
+    // Exclude actions
     // ---------------------------------------------------------------
-    // public static array $exceptActions = [];
+    public static array $exceptActions = ['forceDelete'];
 
     // ---------------------------------------------------------------
-    // Hidden columns (add columns to hide from API responses)
+    // Relationships
     // ---------------------------------------------------------------
-    // protected static $additionalHiddenColumns = [];
 
+    public function tasks(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Task::class, 'task_labels');
+    }
 }

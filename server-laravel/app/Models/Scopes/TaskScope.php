@@ -7,56 +7,42 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
 /**
- * Scope for the Task model.
+ * TaskScope — members and viewers only see tasks assigned to them.
  *
- * ScopedDB automatically discovers scopes from app/Models/Scopes/.
- * The naming convention is {ModelName}Scope.php.
- *
- * This scope is applied when using ScopedDB::table('tasks')
- * to ensure data isolation based on the authenticated user.
+ * Auto-discovered by the HasAutoScope trait via naming convention.
  */
 class TaskScope implements Scope
 {
     /**
      * Apply the scope to a given Eloquent query builder.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder  $builder
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @return void
      */
     public function apply($builder, $model): void
     {
-        // ---------------------------------------------------------------
-        // Example: Filter by authenticated user (Sanctum)
-        // ---------------------------------------------------------------
-        // $user = auth('sanctum')->user();
-        // if ($user) {
-        //     $builder->where('user_id', $user->id);
-        // }
+        if (app()->runningInConsole() && !app()->runningUnitTests()) {
+            return;
+        }
 
-        // ---------------------------------------------------------------
-        // Example: Role-based filtering (check user role via Sanctum)
-        // ---------------------------------------------------------------
-        // $user = auth('sanctum')->user();
-        // if ($user) {
-        //     $organization = request()->get('organization');
-        //     $roleSlug = $user->getRoleSlugForValidation($organization);
-        //
-        //     // Admins see everything, other roles see only active records
-        //     if ($roleSlug !== 'admin') {
-        //         $builder->where('is_active', true);
-        //     }
-        // }
+        $user = auth('sanctum')->user();
 
-        // ---------------------------------------------------------------
-        // Example: Token ability check (Sanctum token abilities)
-        // ---------------------------------------------------------------
-        // $user = auth('sanctum')->user();
-        // if ($user && $user->currentAccessToken()) {
-        //     if (!$user->tokenCan('tasks:read-all')) {
-        //         // Token doesn't have full read access, restrict to own records
-        //         $builder->where('user_id', $user->id);
-        //     }
-        // }
+        if (!$user) {
+            return;
+        }
+
+        $organization = request()->attributes->get('organization');
+
+        if (!$organization) {
+            return;
+        }
+
+        if (!method_exists($user, 'getRoleSlugForValidation')) {
+            return;
+        }
+
+        $roleSlug = $user->getRoleSlugForValidation($organization);
+
+        // Members and viewers only see tasks assigned to them
+        if (in_array($roleSlug, ['member', 'viewer'])) {
+            $builder->where('assignee_id', $user->id);
+        }
     }
 }

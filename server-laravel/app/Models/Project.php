@@ -3,15 +3,13 @@
 namespace App\Models;
 
 use AgentCode\Models\AgentCodeModel;
-// use AgentCode\Traits\HasAuditTrail;
-// use AgentCode\Traits\HasUuid;
+use AgentCode\Traits\HasAuditTrail;
 use AgentCode\Traits\BelongsToOrganization;
 
 
 class Project extends AgentCodeModel
 {
-    // use HasAuditTrail;
-    // use HasUuid;
+    use HasAuditTrail;
     use BelongsToOrganization;
 
     protected $fillable = [
