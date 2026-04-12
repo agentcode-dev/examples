@@ -4,6 +4,10 @@ return [
     'models' => [
         'organizations' => \App\Models\Organization::class,
         'roles' => \App\Models\Role::class,
+        'comments' => \App\Models\Comment::class,
+        'labels' => \App\Models\Label::class,
+        'projects' => \App\Models\Project::class,
+        'tasks' => \App\Models\Task::class,
     ],
     'route_groups' => [
         'tenant' => [
