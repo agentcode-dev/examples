@@ -83,6 +83,20 @@ jobs:
         working-directory: server-adonisjs
         run: npm install --legacy-peer-deps
 
+      - name: Setup environment
+        working-directory: server-adonisjs
+        run: |
+          cp .env.example .env 2>/dev/null || cat > .env << 'ENVEOF'
+          NODE_ENV=development
+          PORT=3333
+          HOST=0.0.0.0
+          LOG_LEVEL=info
+          APP_KEY=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
+          APP_URL=http://localhost:3333
+          SESSION_DRIVER=memory
+          DB_CONNECTION=sqlite
+          ENVEOF
+
       - name: Run migrations and seed
         working-directory: server-adonisjs
         run: |
