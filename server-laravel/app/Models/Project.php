@@ -13,6 +13,7 @@ class Project extends AgentCodeModel
     use BelongsToOrganization;
 
     protected $fillable = [
+            'organization_id',
             'title',
             'description',
             'status',

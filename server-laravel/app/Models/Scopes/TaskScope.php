@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
 
 /**
- * TaskScope — members and viewers only see tasks assigned to them.
+ * TaskScope -- members and viewers only see tasks assigned to them.
  *
  * Auto-discovered by the HasAutoScope trait via naming convention.
  */
@@ -22,7 +22,7 @@ class TaskScope implements Scope
             return;
         }
 
-        $user = auth('sanctum')->user();
+        $user = auth('sanctum')->user() ?? auth()->user();
 
         if (!$user) {
             return;
@@ -42,7 +42,7 @@ class TaskScope implements Scope
 
         // Members and viewers only see tasks assigned to them
         if (in_array($roleSlug, ['member', 'viewer'])) {
-            $builder->where('assignee_id', $user->id);
+            $builder->where('tasks.assignee_id', $user->id);
         }
     }
 }

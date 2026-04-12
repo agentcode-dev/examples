@@ -15,6 +15,7 @@ class Label extends AgentCodeModel
     use BelongsToOrganization;
 
     protected $fillable = [
+            'organization_id',
             'name',
             'color',
         ];
