@@ -10,10 +10,15 @@ class Comment < AgentCode::AgentCodeModel
 
   validates :body, presence: true, allow_nil: true
 
-  belongs_to :task
-  belongs_to :user
+  # Scope for organization filtering (avoids framework join bug with 3-level nesting)
+  def self.for_organization(organization)
+    joins(task: :project).where(projects: { organization_id: organization.id })
+  end
 
-  before_create :auto_set_user_id
+  belongs_to :task
+  belongs_to :user, optional: true
+
+  before_validation :auto_set_user_id, on: :create
 
   private
 
