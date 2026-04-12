@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Task < AgentCode::AgentCodeModel
+  include AgentCode::HasAuditTrail
   include Discard::Model
 
   agentcode_filters :title, :status, :priority

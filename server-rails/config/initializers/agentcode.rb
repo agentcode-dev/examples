@@ -9,6 +9,10 @@ AgentCode.configure do |config|
   # ---------------------------------------------------------------
   config.model :organizations, "Organization"
   config.model :roles, "Role"
+  config.model :projects, "Project"
+  config.model :tasks, "Task"
+  config.model :comments, "Comment"
+  config.model :labels, "Label"
 
   # ---------------------------------------------------------------
   # Route Groups

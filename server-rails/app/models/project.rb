@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class Project < AgentCode::AgentCodeModel
+  include AgentCode::HasAuditTrail
   include AgentCode::BelongsToOrganization
   include Discard::Model
 
