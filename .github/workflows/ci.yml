@@ -52,18 +52,20 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.4'
-          bundler-cache: true
-          working-directory: server-rails
+
+      - name: Install dependencies
+        working-directory: server-rails
+        run: bundle install
 
       - name: Setup database
         working-directory: server-rails
         run: |
-          bundle exec rails db:create
-          bundle exec rails db:schema:load || bundle exec rails db:migrate
+          RAILS_ENV=test bundle exec rails db:create
+          RAILS_ENV=test bundle exec rails db:migrate
 
       - name: Run tests
         working-directory: server-rails
-        run: bundle exec rspec
+        run: RAILS_ENV=test bundle exec rspec
 
   adonisjs:
     name: AdonisJS Tests
