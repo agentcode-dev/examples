@@ -16,7 +16,7 @@ RSpec.describe "Tasks", type: :request do
   it "admin can create a task" do
     user = create_user_in_org("admin", @org)
 
-    post "/api/#{@org.id}/tasks", params: {
+    post "/api/#{@org.slug}/tasks", params: {
       title: "New Task",
       description: "Do something important",
       status: "todo",
@@ -34,7 +34,7 @@ RSpec.describe "Tasks", type: :request do
     user = create_user_in_org("admin", @org)
     create(:task, project_id: @project.id)
 
-    get "/api/#{@org.id}/tasks", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/tasks", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
   end
@@ -43,7 +43,7 @@ RSpec.describe "Tasks", type: :request do
     user = create_user_in_org("admin", @org)
     task = create(:task, project_id: @project.id)
 
-    put "/api/#{@org.id}/tasks/#{task.id}", params: {
+    put "/api/#{@org.slug}/tasks/#{task.id}", params: {
       title: "Updated Task",
       status: task.status,
       priority: task.priority,
@@ -59,7 +59,7 @@ RSpec.describe "Tasks", type: :request do
     user = create_user_in_org("admin", @org)
     task = create(:task, project_id: @project.id)
 
-    delete "/api/#{@org.id}/tasks/#{task.id}", headers: auth_headers(user), as: :json
+    delete "/api/#{@org.slug}/tasks/#{task.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:no_content)
   end
@@ -74,7 +74,7 @@ RSpec.describe "Tasks", type: :request do
     create(:task, project_id: @project.id, assignee_id: member.id, title: "My Task")
     create(:task, project_id: @project.id, assignee_id: nil, title: "Other Task")
 
-    get "/api/#{@org.id}/tasks", headers: auth_headers(member), as: :json
+    get "/api/#{@org.slug}/tasks", headers: auth_headers(member), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -92,7 +92,7 @@ RSpec.describe "Tasks", type: :request do
     user = create_user_in_org("admin", @org)
     task = create(:task, project_id: @project.id, estimated_hours: 16.0)
 
-    get "/api/#{@org.id}/tasks/#{task.id}", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/tasks/#{task.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -103,7 +103,7 @@ RSpec.describe "Tasks", type: :request do
     member = create_user_in_org("member", @org, permissions: %w[tasks.index tasks.show tasks.update])
     task = create(:task, project_id: @project.id, assignee_id: member.id, estimated_hours: 16.0)
 
-    get "/api/#{@org.id}/tasks/#{task.id}", headers: auth_headers(member), as: :json
+    get "/api/#{@org.slug}/tasks/#{task.id}", headers: auth_headers(member), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -118,7 +118,7 @@ RSpec.describe "Tasks", type: :request do
     member = create_user_in_org("member", @org, permissions: %w[tasks.index tasks.show tasks.update])
     task = create(:task, project_id: @project.id, assignee_id: member.id, status: "todo", description: "Old description")
 
-    put "/api/#{@org.id}/tasks/#{task.id}", params: {
+    put "/api/#{@org.slug}/tasks/#{task.id}", params: {
       status: "in_progress",
       description: "Updated description"
     }, headers: auth_headers(member), as: :json
@@ -133,7 +133,7 @@ RSpec.describe "Tasks", type: :request do
     member = create_user_in_org("member", @org, permissions: %w[tasks.index tasks.show tasks.update])
     task = create(:task, project_id: @project.id, assignee_id: member.id)
 
-    put "/api/#{@org.id}/tasks/#{task.id}", params: {
+    put "/api/#{@org.slug}/tasks/#{task.id}", params: {
       title: "Should Not Change"
     }, headers: auth_headers(member), as: :json
 
@@ -147,7 +147,7 @@ RSpec.describe "Tasks", type: :request do
   it "member cannot create a task" do
     member = create_user_in_org("member", @org, permissions: %w[tasks.index tasks.show tasks.update])
 
-    post "/api/#{@org.id}/tasks", params: {
+    post "/api/#{@org.slug}/tasks", params: {
       title: "Should Fail",
       project_id: @project.id
     }, headers: auth_headers(member), as: :json
@@ -163,7 +163,7 @@ RSpec.describe "Tasks", type: :request do
     viewer = create_user_in_org("viewer", @org, permissions: %w[tasks.index tasks.show])
     task = create(:task, project_id: @project.id, assignee_id: viewer.id)
 
-    put "/api/#{@org.id}/tasks/#{task.id}", params: {
+    put "/api/#{@org.slug}/tasks/#{task.id}", params: {
       status: "done"
     }, headers: auth_headers(viewer), as: :json
 

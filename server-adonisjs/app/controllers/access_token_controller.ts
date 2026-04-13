@@ -1,4 +1,6 @@
 import User from '#models/user'
+import UserRole from '#models/user_role'
+import Organization from '#models/organization'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class AccessTokenController {
@@ -13,15 +15,19 @@ export default class AccessTokenController {
       const user = await User.verifyCredentials(email, password)
       const token = await User.accessTokens.create(user)
 
+      // Find the user's first organization slug (matches Laravel/Rails format)
+      let organizationSlug: string | null = null
+      const userRole = await UserRole.query().where('user_id', user.id).first()
+      if (userRole) {
+        const org = await Organization.find(userRole.organizationId)
+        if (org) {
+          organizationSlug = org.slug
+        }
+      }
+
       return {
-        data: {
-          user: {
-            id: user.id,
-            fullName: user.fullName,
-            email: user.email,
-          },
-          token: token.value!.release(),
-        },
+        token: token.value!.release(),
+        organization_slug: organizationSlug,
       }
     } catch {
       return response.unauthorized({ error: 'Invalid credentials' })

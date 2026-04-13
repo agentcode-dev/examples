@@ -45,7 +45,7 @@ it('rejects login with non-existent email', function () {
 });
 
 it('requires authentication to access protected endpoints', function () {
-    $response = $this->getJson('/api/1/projects');
+    $response = $this->getJson('/api/' . $org->slug . '/projects');
 
     $response->assertStatus(401);
 });

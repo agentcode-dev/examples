@@ -282,17 +282,34 @@ export default class ResourcesController {
     }
   }
 
+  /**
+   * Convert all keys in an object from camelCase to snake_case.
+   * Also removes timestamps (created_at, updated_at, deleted_at) to match
+   * Laravel/Rails response format which excludes them by default.
+   */
+  private toSnakeCase(data: any): any {
+    const result: any = {}
+    const excludeKeys = new Set(['createdAt', 'updatedAt', 'deletedAt', 'created_at', 'updated_at', 'deleted_at'])
+
+    for (const [key, value] of Object.entries(data)) {
+      if (excludeKeys.has(key)) continue
+      const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase()
+      result[snakeKey] = value instanceof DateTime ? value.toISO() : value
+    }
+    return result
+  }
+
   private hideFields(ctx: HttpContext, config: ResourceModelConfig, data: any): any {
+    // First convert to snake_case (matching Laravel/Rails format)
+    const snaked = this.toSnakeCase(data)
+
     const roleName = this.getRoleName(ctx)
     const hiddenFields = config.hiddenFields?.[roleName]
-    if (!hiddenFields || hiddenFields.length === 0) return data
+    if (!hiddenFields || hiddenFields.length === 0) return snaked
 
-    const result = { ...data }
+    const result = { ...snaked }
     for (const field of hiddenFields) {
       delete result[field]
-      // Also check camelCase variant
-      const camel = field.replace(/_([a-z])/g, (_: any, c: string) => c.toUpperCase())
-      delete result[camel]
     }
     return result
   }

@@ -15,7 +15,7 @@ RSpec.describe "Labels", type: :request do
   it "admin can create a label" do
     user = create_user_in_org("admin", @org)
 
-    post "/api/#{@org.id}/labels", params: {
+    post "/api/#{@org.slug}/labels", params: {
       name: "bug",
       color: "#ff0000"
     }, headers: auth_headers(user), as: :json
@@ -30,7 +30,7 @@ RSpec.describe "Labels", type: :request do
     user = create_user_in_org("admin", @org)
     create(:label, organization_id: @org.id)
 
-    get "/api/#{@org.id}/labels", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/labels", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -42,7 +42,7 @@ RSpec.describe "Labels", type: :request do
     user = create_user_in_org("admin", @org)
     label = create(:label, organization_id: @org.id)
 
-    put "/api/#{@org.id}/labels/#{label.id}", params: {
+    put "/api/#{@org.slug}/labels/#{label.id}", params: {
       name: "updated-name"
     }, headers: auth_headers(user), as: :json
 
@@ -55,7 +55,7 @@ RSpec.describe "Labels", type: :request do
     user = create_user_in_org("admin", @org)
     label = create(:label, organization_id: @org.id)
 
-    delete "/api/#{@org.id}/labels/#{label.id}", headers: auth_headers(user), as: :json
+    delete "/api/#{@org.slug}/labels/#{label.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:no_content)
     expect(Label.kept.find_by(id: label.id)).to be_nil
@@ -71,7 +71,7 @@ RSpec.describe "Labels", type: :request do
     label = create(:label, organization_id: @org.id)
     label.discard!
 
-    delete "/api/#{@org.id}/labels/#{label.id}/force-delete", headers: auth_headers(user), as: :json
+    delete "/api/#{@org.slug}/labels/#{label.id}/force-delete", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:not_found)
   end
@@ -83,7 +83,7 @@ RSpec.describe "Labels", type: :request do
   it "member cannot create a label" do
     user = create_user_in_org("member", @org, permissions: %w[labels.index labels.show])
 
-    post "/api/#{@org.id}/labels", params: { name: "should-fail" }, headers: auth_headers(user), as: :json
+    post "/api/#{@org.slug}/labels", params: { name: "should-fail" }, headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -92,7 +92,7 @@ RSpec.describe "Labels", type: :request do
     user = create_user_in_org("viewer", @org, permissions: %w[labels.index labels.show])
     create(:label, organization_id: @org.id)
 
-    get "/api/#{@org.id}/labels", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/labels", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
   end
@@ -108,7 +108,7 @@ RSpec.describe "Labels", type: :request do
     create(:label, organization_id: @org.id, name: "mine")
     create(:label, organization_id: other_org.id, name: "theirs")
 
-    get "/api/#{@org.id}/labels", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/labels", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)

@@ -16,7 +16,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("admin", @org)
     create(:project, organization_id: @org.id)
 
-    get "/api/#{@org.id}/projects", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/projects", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -27,7 +27,7 @@ RSpec.describe "Projects", type: :request do
   it "admin can create a project" do
     user = create_user_in_org("admin", @org)
 
-    post "/api/#{@org.id}/projects", params: {
+    post "/api/#{@org.slug}/projects", params: {
       title: "New Project",
       description: "A test project",
       status: "draft",
@@ -47,7 +47,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("admin", @org)
     project = create(:project, organization_id: @org.id)
 
-    put "/api/#{@org.id}/projects/#{project.id}", params: {
+    put "/api/#{@org.slug}/projects/#{project.id}", params: {
       title: "Updated Title",
       status: project.status
     }, headers: auth_headers(user), as: :json
@@ -61,7 +61,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("admin", @org)
     project = create(:project, organization_id: @org.id)
 
-    delete "/api/#{@org.id}/projects/#{project.id}", headers: auth_headers(user), as: :json
+    delete "/api/#{@org.slug}/projects/#{project.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:no_content)
     expect(Project.kept.find_by(id: project.id)).to be_nil
@@ -76,7 +76,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("admin", @org)
     project = create(:project, organization_id: @org.id, budget: 50_000, internal_notes: "Top secret")
 
-    get "/api/#{@org.id}/projects/#{project.id}", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/projects/#{project.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -88,7 +88,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("member", @org, permissions: %w[projects.index projects.show])
     project = create(:project, organization_id: @org.id, budget: 50_000, internal_notes: "Top secret")
 
-    get "/api/#{@org.id}/projects/#{project.id}", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/projects/#{project.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -101,7 +101,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("viewer", @org, permissions: %w[projects.index projects.show])
     project = create(:project, organization_id: @org.id, budget: 50_000, internal_notes: "Top secret")
 
-    get "/api/#{@org.id}/projects/#{project.id}", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/projects/#{project.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -116,7 +116,7 @@ RSpec.describe "Projects", type: :request do
   it "manager cannot set budget when creating a project" do
     user = create_user_in_org("manager", @org, permissions: %w[projects.index projects.show projects.store projects.update])
 
-    post "/api/#{@org.id}/projects", params: {
+    post "/api/#{@org.slug}/projects", params: {
       title: "Manager Project",
       status: "draft",
       budget: 99_999
@@ -132,7 +132,7 @@ RSpec.describe "Projects", type: :request do
   it "member cannot create a project" do
     user = create_user_in_org("member", @org, permissions: %w[projects.index projects.show])
 
-    post "/api/#{@org.id}/projects", params: { title: "Should Fail" }, headers: auth_headers(user), as: :json
+    post "/api/#{@org.slug}/projects", params: { title: "Should Fail" }, headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -141,7 +141,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("viewer", @org, permissions: %w[projects.index projects.show])
     project = create(:project, organization_id: @org.id)
 
-    delete "/api/#{@org.id}/projects/#{project.id}", headers: auth_headers(user), as: :json
+    delete "/api/#{@org.slug}/projects/#{project.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:forbidden)
   end
@@ -155,7 +155,7 @@ RSpec.describe "Projects", type: :request do
     user = create_user_in_org("admin", @org)
     project = create(:project, organization_id: other_org.id)
 
-    get "/api/#{@org.id}/projects/#{project.id}", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/projects/#{project.id}", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:not_found)
   end
@@ -164,7 +164,7 @@ RSpec.describe "Projects", type: :request do
     other_org = create(:organization)
     user = create_user_in_org("admin", @org)
 
-    get "/api/#{other_org.id}/projects", headers: auth_headers(user), as: :json
+    get "/api/#{other_org.slug}/projects", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:not_found)
   end

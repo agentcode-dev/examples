@@ -23,7 +23,7 @@ it('admin can create a task', function () {
     $user = Tests\createUserInOrg('admin', $this->org);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/tasks', [
+        ->postJson('/api/' . $this->org->slug . '/tasks', [
             'title' => 'New Task',
             'description' => 'Do something important',
             'status' => 'todo',
@@ -41,7 +41,7 @@ it('admin can list tasks', function () {
     Task::factory()->create(['project_id' => $this->project->id]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/tasks');
+        ->getJson('/api/' . $this->org->slug . '/tasks');
 
     $response->assertStatus(200);
 });
@@ -51,7 +51,7 @@ it('admin can update a task', function () {
     $task = Task::factory()->create(['project_id' => $this->project->id]);
 
     $response = $this->actingAs($user)
-        ->putJson('/api/' . $this->org->id . '/tasks/' . $task->id, [
+        ->putJson('/api/' . $this->org->slug . '/tasks/' . $task->id, [
             'title' => 'Updated Task',
             'status' => $task->status,
             'priority' => $task->priority,
@@ -67,7 +67,7 @@ it('admin can delete a task', function () {
     $task = Task::factory()->create(['project_id' => $this->project->id]);
 
     $response = $this->actingAs($user)
-        ->deleteJson('/api/' . $this->org->id . '/tasks/' . $task->id);
+        ->deleteJson('/api/' . $this->org->slug . '/tasks/' . $task->id);
 
     $response->assertStatus(204);
 });
@@ -96,7 +96,7 @@ it('member only sees tasks assigned to them', function () {
     ]);
 
     $response = $this->actingAs($member)
-        ->getJson('/api/' . $this->org->id . '/tasks');
+        ->getJson('/api/' . $this->org->slug . '/tasks');
 
     $response->assertStatus(200);
     // Response may be wrapped in { "data": [...] } or flat array
@@ -120,7 +120,7 @@ it('admin sees estimated_hours', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/tasks/' . $task->id);
+        ->getJson('/api/' . $this->org->slug . '/tasks/' . $task->id);
 
     $response->assertStatus(200);
     expect($response->json())->toHaveKey('estimated_hours');
@@ -138,7 +138,7 @@ it('member cannot see estimated_hours', function () {
     ]);
 
     $response = $this->actingAs($member)
-        ->getJson('/api/' . $this->org->id . '/tasks/' . $task->id);
+        ->getJson('/api/' . $this->org->slug . '/tasks/' . $task->id);
 
     $response->assertStatus(200);
     expect($response->json())->not->toHaveKey('estimated_hours');
@@ -161,7 +161,7 @@ it('member can update task status and description', function () {
     ]);
 
     $response = $this->actingAs($member)
-        ->putJson('/api/' . $this->org->id . '/tasks/' . $task->id, [
+        ->putJson('/api/' . $this->org->slug . '/tasks/' . $task->id, [
             'status' => 'in_progress',
             'description' => 'Updated description',
         ]);
@@ -182,7 +182,7 @@ it('member cannot update task title (forbidden field)', function () {
     ]);
 
     $response = $this->actingAs($member)
-        ->putJson('/api/' . $this->org->id . '/tasks/' . $task->id, [
+        ->putJson('/api/' . $this->org->slug . '/tasks/' . $task->id, [
             'title' => 'Should Not Change',
         ]);
 
@@ -199,7 +199,7 @@ it('member cannot create a task', function () {
     ]);
 
     $response = $this->actingAs($member)
-        ->postJson('/api/' . $this->org->id . '/tasks', [
+        ->postJson('/api/' . $this->org->slug . '/tasks', [
             'title' => 'Should Fail',
             'project_id' => $this->project->id,
         ]);
@@ -222,7 +222,7 @@ it('viewer cannot update a task', function () {
     ]);
 
     $response = $this->actingAs($viewer)
-        ->putJson('/api/' . $this->org->id . '/tasks/' . $task->id, [
+        ->putJson('/api/' . $this->org->slug . '/tasks/' . $task->id, [
             'status' => 'done',
         ]);
 

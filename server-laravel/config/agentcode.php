@@ -17,7 +17,7 @@ return [
         ],
     ],
     'multi_tenant' => [
-        'organization_identifier_column' => 'id',
+        'organization_identifier_column' => 'slug',
     ],
     'invitations' => [
         'expires_days' => env('INVITATION_EXPIRES_DAYS', 7),

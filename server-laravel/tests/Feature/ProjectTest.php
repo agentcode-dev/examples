@@ -25,7 +25,7 @@ it('admin can list projects', function () {
     Project::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/projects');
+        ->getJson('/api/' . $this->org->slug . '/projects');
 
     $response->assertStatus(200);
     expect($response->json())->toBeArray()->toHaveCount(1);
@@ -35,7 +35,7 @@ it('admin can create a project', function () {
     $user = Tests\createUserInOrg('admin', $this->org);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/projects', [
+        ->postJson('/api/' . $this->org->slug . '/projects', [
             'title' => 'New Project',
             'description' => 'A test project',
             'status' => 'draft',
@@ -55,7 +55,7 @@ it('admin can update a project', function () {
     $project = Project::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->putJson('/api/' . $this->org->id . '/projects/' . $project->id, [
+        ->putJson('/api/' . $this->org->slug . '/projects/' . $project->id, [
             'title' => 'Updated Title',
             'status' => $project->status,
         ]);
@@ -69,7 +69,7 @@ it('admin can delete a project', function () {
     $project = Project::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->deleteJson('/api/' . $this->org->id . '/projects/' . $project->id);
+        ->deleteJson('/api/' . $this->org->slug . '/projects/' . $project->id);
 
     $response->assertStatus(204);
     expect(Project::find($project->id))->toBeNull();
@@ -89,7 +89,7 @@ it('admin sees all fields including budget and internal_notes', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/projects/' . $project->id);
+        ->getJson('/api/' . $this->org->slug . '/projects/' . $project->id);
 
     $response->assertStatus(200);
     $data = $response->json();
@@ -108,7 +108,7 @@ it('member cannot see budget or internal_notes', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/projects/' . $project->id);
+        ->getJson('/api/' . $this->org->slug . '/projects/' . $project->id);
 
     $response->assertStatus(200);
     $data = $response->json();
@@ -128,7 +128,7 @@ it('viewer cannot see budget or internal_notes', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/projects/' . $project->id);
+        ->getJson('/api/' . $this->org->slug . '/projects/' . $project->id);
 
     $response->assertStatus(200);
     $data = $response->json();
@@ -146,7 +146,7 @@ it('manager cannot set budget when creating a project', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/projects', [
+        ->postJson('/api/' . $this->org->slug . '/projects', [
             'title' => 'Manager Project',
             'status' => 'draft',
             'budget' => 99999,
@@ -165,7 +165,7 @@ it('member cannot create a project', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/projects', [
+        ->postJson('/api/' . $this->org->slug . '/projects', [
             'title' => 'Should Fail',
         ]);
 
@@ -179,7 +179,7 @@ it('viewer cannot delete a project', function () {
     $project = Project::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->deleteJson('/api/' . $this->org->id . '/projects/' . $project->id);
+        ->deleteJson('/api/' . $this->org->slug . '/projects/' . $project->id);
 
     $response->assertStatus(403);
 });
@@ -196,7 +196,7 @@ it('cannot access projects from another organization', function () {
 
     // User tries to access project from their org scope -- shouldn't find it
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/projects/' . $project->id);
+        ->getJson('/api/' . $this->org->slug . '/projects/' . $project->id);
 
     $response->assertStatus(404);
 });

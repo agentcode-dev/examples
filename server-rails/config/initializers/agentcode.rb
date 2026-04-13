@@ -26,7 +26,7 @@ AgentCode.configure do |config|
   # Multi-tenant
   # ---------------------------------------------------------------
   config.multi_tenant = {
-    organization_identifier_column: "id"
+    organization_identifier_column: "slug"
   }
 
   # ---------------------------------------------------------------

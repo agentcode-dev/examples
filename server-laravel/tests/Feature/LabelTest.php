@@ -21,7 +21,7 @@ it('admin can create a label', function () {
     $user = Tests\createUserInOrg('admin', $this->org);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/labels', [
+        ->postJson('/api/' . $this->org->slug . '/labels', [
             'name' => 'bug',
             'color' => '#ff0000',
         ]);
@@ -36,7 +36,7 @@ it('admin can list labels', function () {
     Label::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/labels');
+        ->getJson('/api/' . $this->org->slug . '/labels');
 
     $response->assertStatus(200);
     expect($response->json())->toHaveCount(1);
@@ -47,7 +47,7 @@ it('admin can update a label', function () {
     $label = Label::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->putJson('/api/' . $this->org->id . '/labels/' . $label->id, [
+        ->putJson('/api/' . $this->org->slug . '/labels/' . $label->id, [
             'name' => 'updated-name',
         ]);
 
@@ -60,7 +60,7 @@ it('admin can soft-delete a label', function () {
     $label = Label::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->deleteJson('/api/' . $this->org->id . '/labels/' . $label->id);
+        ->deleteJson('/api/' . $this->org->slug . '/labels/' . $label->id);
 
     $response->assertStatus(204);
     expect(Label::find($label->id))->toBeNull();
@@ -79,7 +79,7 @@ it('force-delete route does not exist for labels', function () {
     $label->delete();
 
     $response = $this->actingAs($user)
-        ->deleteJson('/api/' . $this->org->id . '/labels/' . $label->id . '/force-delete');
+        ->deleteJson('/api/' . $this->org->slug . '/labels/' . $label->id . '/force-delete');
 
     // Should get 404 because the route is excluded
     $response->assertStatus(404);
@@ -95,7 +95,7 @@ it('member cannot create a label', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/labels', [
+        ->postJson('/api/' . $this->org->slug . '/labels', [
             'name' => 'should-fail',
         ]);
 
@@ -109,7 +109,7 @@ it('viewer can list labels', function () {
     Label::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/labels');
+        ->getJson('/api/' . $this->org->slug . '/labels');
 
     $response->assertStatus(200);
 });
@@ -126,7 +126,7 @@ it('labels are isolated per organization', function () {
     Label::factory()->create(['organization_id' => $otherOrg->id, 'name' => 'theirs']);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/labels');
+        ->getJson('/api/' . $this->org->slug . '/labels');
 
     $response->assertStatus(200);
     $labels = $response->json('data') ?? $response->json();

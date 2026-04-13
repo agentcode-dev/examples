@@ -19,7 +19,7 @@ it('admin can create multiple resources in a single nested request', function ()
     $project = Project::factory()->create(['organization_id' => $this->org->id]);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/nested', [
+        ->postJson('/api/' . $this->org->slug . '/nested', [
             'operations' => [
                 [
                     'model' => 'tasks',
@@ -59,7 +59,7 @@ it('nested operation is atomic - rolls back on failure', function () {
     $taskCountBefore = Task::count();
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/nested', [
+        ->postJson('/api/' . $this->org->slug . '/nested', [
             'operations' => [
                 [
                     'model' => 'tasks',
@@ -102,7 +102,7 @@ it('nested create and update in single transaction', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/nested', [
+        ->postJson('/api/' . $this->org->slug . '/nested', [
             'operations' => [
                 [
                     'model' => 'tasks',

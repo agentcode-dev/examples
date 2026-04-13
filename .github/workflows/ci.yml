@@ -111,7 +111,7 @@ jobs:
           # Login
           TOKEN=$(curl -sf -X POST http://localhost:8002/api/auth/login \
             -H "Content-Type: application/json" \
-            -d '{"email":"alice@acme.com","password":"password"}' | jq -r '.data.token // .token')
+            -d '{"email":"alice@acme.com","password":"password"}' | jq -r '.token')
 
           if [ -z "$TOKEN" ] || [ "$TOKEN" = "null" ]; then
             echo "FAIL: Login failed"
@@ -131,7 +131,7 @@ jobs:
           # Viewer blocked from create
           VIEWER_TOKEN=$(curl -sf -X POST http://localhost:8002/api/auth/login \
             -H "Content-Type: application/json" \
-            -d '{"email":"dave@acme.com","password":"password"}' | jq -r '.data.token // .token')
+            -d '{"email":"dave@acme.com","password":"password"}' | jq -r '.token')
 
           STATUS=$(curl -so /dev/null -w "%{http_code}" -X POST http://localhost:8002/api/acme-corp/projects \
             -H "Authorization: Bearer $VIEWER_TOKEN" \
@@ -146,7 +146,7 @@ jobs:
           # Cross-org isolation
           GLOBEX_TOKEN=$(curl -sf -X POST http://localhost:8002/api/auth/login \
             -H "Content-Type: application/json" \
-            -d '{"email":"eve@globex.com","password":"password"}' | jq -r '.data.token // .token')
+            -d '{"email":"eve@globex.com","password":"password"}' | jq -r '.token')
 
           STATUS=$(curl -so /dev/null -w "%{http_code}" http://localhost:8002/api/acme-corp/projects \
             -H "Authorization: Bearer $GLOBEX_TOKEN")
@@ -159,7 +159,7 @@ jobs:
           # Hidden columns (member)
           MEMBER_TOKEN=$(curl -sf -X POST http://localhost:8002/api/auth/login \
             -H "Content-Type: application/json" \
-            -d '{"email":"carol@acme.com","password":"password"}' | jq -r '.data.token // .token')
+            -d '{"email":"carol@acme.com","password":"password"}' | jq -r '.token')
 
           HAS_BUDGET=$(curl -sf http://localhost:8002/api/acme-corp/projects \
             -H "Authorization: Bearer $MEMBER_TOKEN" | jq '.data[0] | has("budget")')

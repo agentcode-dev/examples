@@ -19,7 +19,7 @@ it('admin can view trashed projects', function () {
     $project->delete();
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/projects/trashed');
+        ->getJson('/api/' . $this->org->slug . '/projects/trashed');
 
     $response->assertStatus(200);
     $items = $response->json();
@@ -32,7 +32,7 @@ it('admin can restore a soft-deleted project', function () {
     $project->delete();
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/projects/' . $project->id . '/restore');
+        ->postJson('/api/' . $this->org->slug . '/projects/' . $project->id . '/restore');
 
     $response->assertStatus(200);
     expect(Project::find($project->id))->not->toBeNull();
@@ -44,7 +44,7 @@ it('admin can force-delete a project', function () {
     $project->delete();
 
     $response = $this->actingAs($user)
-        ->deleteJson('/api/' . $this->org->id . '/projects/' . $project->id . '/force-delete');
+        ->deleteJson('/api/' . $this->org->slug . '/projects/' . $project->id . '/force-delete');
 
     $response->assertStatus(204);
     expect(Project::withTrashed()->find($project->id))->toBeNull();
@@ -58,7 +58,7 @@ it('viewer cannot restore a project', function () {
     $project->delete();
 
     $response = $this->actingAs($viewer)
-        ->postJson('/api/' . $this->org->id . '/projects/' . $project->id . '/restore');
+        ->postJson('/api/' . $this->org->slug . '/projects/' . $project->id . '/restore');
 
     $response->assertStatus(403);
 });

@@ -25,7 +25,7 @@ it('admin can create a comment', function () {
     $user = Tests\createUserInOrg('admin', $this->org);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/comments', [
+        ->postJson('/api/' . $this->org->slug . '/comments', [
             'body' => 'This is a comment',
             'task_id' => $this->task->id,
         ]);
@@ -38,7 +38,7 @@ it('auto-sets user_id on comment creation', function () {
     $user = Tests\createUserInOrg('admin', $this->org);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/comments', [
+        ->postJson('/api/' . $this->org->slug . '/comments', [
             'body' => 'Auto user id test',
             'task_id' => $this->task->id,
         ]);
@@ -51,7 +51,7 @@ it('comment has a uuid', function () {
     $user = Tests\createUserInOrg('admin', $this->org);
 
     $response = $this->actingAs($user)
-        ->postJson('/api/' . $this->org->id . '/comments', [
+        ->postJson('/api/' . $this->org->slug . '/comments', [
             'body' => 'UUID test',
             'task_id' => $this->task->id,
         ]);
@@ -72,7 +72,7 @@ it('admin can list comments', function () {
     ]);
 
     $response = $this->actingAs($user)
-        ->getJson('/api/' . $this->org->id . '/comments');
+        ->getJson('/api/' . $this->org->slug . '/comments');
 
     $response->assertStatus(200);
 });
@@ -83,7 +83,7 @@ it('member can create a comment', function () {
     ]);
 
     $response = $this->actingAs($member)
-        ->postJson('/api/' . $this->org->id . '/comments', [
+        ->postJson('/api/' . $this->org->slug . '/comments', [
             'body' => 'Member comment',
             'task_id' => $this->task->id,
         ]);
@@ -97,7 +97,7 @@ it('viewer cannot create a comment', function () {
     ]);
 
     $response = $this->actingAs($viewer)
-        ->postJson('/api/' . $this->org->id . '/comments', [
+        ->postJson('/api/' . $this->org->slug . '/comments', [
             'body' => 'Should fail',
             'task_id' => $this->task->id,
         ]);

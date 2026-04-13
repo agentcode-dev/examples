@@ -13,7 +13,7 @@ RSpec.describe "Soft Deletes", type: :request do
     project = create(:project, organization_id: @org.id)
     project.discard!
 
-    get "/api/#{@org.id}/projects/trashed", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/projects/trashed", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     json = JSON.parse(response.body)
@@ -26,7 +26,7 @@ RSpec.describe "Soft Deletes", type: :request do
     project = create(:project, organization_id: @org.id)
     project.discard!
 
-    post "/api/#{@org.id}/projects/#{project.id}/restore", headers: auth_headers(user), as: :json
+    post "/api/#{@org.slug}/projects/#{project.id}/restore", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
     expect(Project.kept.find_by(id: project.id)).not_to be_nil
@@ -37,7 +37,7 @@ RSpec.describe "Soft Deletes", type: :request do
     project = create(:project, organization_id: @org.id)
     project.discard!
 
-    delete "/api/#{@org.id}/projects/#{project.id}/force-delete", headers: auth_headers(user), as: :json
+    delete "/api/#{@org.slug}/projects/#{project.id}/force-delete", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:no_content)
     expect(Project.with_discarded.find_by(id: project.id)).to be_nil
@@ -48,7 +48,7 @@ RSpec.describe "Soft Deletes", type: :request do
     project = create(:project, organization_id: @org.id)
     project.discard!
 
-    post "/api/#{@org.id}/projects/#{project.id}/restore", headers: auth_headers(viewer), as: :json
+    post "/api/#{@org.slug}/projects/#{project.id}/restore", headers: auth_headers(viewer), as: :json
 
     expect(response).to have_http_status(:forbidden)
   end

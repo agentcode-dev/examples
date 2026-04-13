@@ -17,7 +17,7 @@ RSpec.describe "Comments", type: :request do
   it "admin can create a comment" do
     user = create_user_in_org("admin", @org)
 
-    post "/api/#{@org.id}/comments", params: {
+    post "/api/#{@org.slug}/comments", params: {
       body: "This is a comment",
       task_id: @task.id
     }, headers: auth_headers(user), as: :json
@@ -30,7 +30,7 @@ RSpec.describe "Comments", type: :request do
   it "auto-sets user_id on comment creation" do
     user = create_user_in_org("admin", @org)
 
-    post "/api/#{@org.id}/comments", params: {
+    post "/api/#{@org.slug}/comments", params: {
       body: "Auto user id test",
       task_id: @task.id
     }, headers: auth_headers(user), as: :json
@@ -43,7 +43,7 @@ RSpec.describe "Comments", type: :request do
   it "comment has a uuid" do
     user = create_user_in_org("admin", @org)
 
-    post "/api/#{@org.id}/comments", params: {
+    post "/api/#{@org.slug}/comments", params: {
       body: "UUID test",
       task_id: @task.id
     }, headers: auth_headers(user), as: :json
@@ -59,7 +59,7 @@ RSpec.describe "Comments", type: :request do
     user = create_user_in_org("admin", @org)
     create(:comment, task_id: @task.id, user_id: user.id)
 
-    get "/api/#{@org.id}/comments", headers: auth_headers(user), as: :json
+    get "/api/#{@org.slug}/comments", headers: auth_headers(user), as: :json
 
     expect(response).to have_http_status(:ok)
   end
@@ -68,7 +68,7 @@ RSpec.describe "Comments", type: :request do
     member = create_user_in_org("member", @org, permissions: %w[comments.index comments.show comments.store comments.update tasks.index tasks.show])
     @task.update!(assignee_id: member.id)
 
-    post "/api/#{@org.id}/comments", params: {
+    post "/api/#{@org.slug}/comments", params: {
       body: "Member comment",
       task_id: @task.id
     }, headers: auth_headers(member), as: :json
@@ -79,7 +79,7 @@ RSpec.describe "Comments", type: :request do
   it "viewer cannot create a comment" do
     viewer = create_user_in_org("viewer", @org, permissions: %w[comments.index comments.show])
 
-    post "/api/#{@org.id}/comments", params: {
+    post "/api/#{@org.slug}/comments", params: {
       body: "Should fail",
       task_id: @task.id
     }, headers: auth_headers(viewer), as: :json
