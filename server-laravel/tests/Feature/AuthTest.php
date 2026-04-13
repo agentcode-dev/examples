@@ -45,6 +45,7 @@ it('rejects login with non-existent email', function () {
 });
 
 it('requires authentication to access protected endpoints', function () {
+    $org = \App\Models\Organization::factory()->create();
     $response = $this->getJson('/api/' . $org->slug . '/projects');
 
     $response->assertStatus(401);
