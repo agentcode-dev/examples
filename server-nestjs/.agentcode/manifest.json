@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "generated_at": "2026-04-15T01:49:18.785Z",
+  "files": {
+    "comments.yaml": {
+      "content_hash": "ebe92ebaef006f48c59aac072601c4ae3eeaf9c32e74868f66ec06b0b95b304b",
+      "generated_files": [
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/prisma/schema.prisma",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/resources/CommentResource.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/policies/CommentPolicy.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/test/generated/Comment.spec.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/seeders/CommentSeeder.ts"
+      ],
+      "generated_at": "2026-04-15T01:49:18.782Z"
+    },
+    "labels.yaml": {
+      "content_hash": "16e7927d2fbe6611ff62e9fea78b2079ca17f3c97f88f7bc4e0ad7212d610a44",
+      "generated_files": [
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/prisma/schema.prisma",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/resources/LabelResource.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/policies/LabelPolicy.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/test/generated/Label.spec.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/seeders/LabelSeeder.ts"
+      ],
+      "generated_at": "2026-04-15T01:49:18.783Z"
+    },
+    "projects.yaml": {
+      "content_hash": "f1d4d107bc14f9ad3ae2b2e945699fdfe9c799d114eac2c60e21941de92bdda8",
+      "generated_files": [
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/prisma/schema.prisma",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/resources/ProjectResource.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/policies/ProjectPolicy.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/test/generated/Project.spec.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/seeders/ProjectSeeder.ts"
+      ],
+      "generated_at": "2026-04-15T01:49:18.784Z"
+    },
+    "tasks.yaml": {
+      "content_hash": "7b6a8869c892bd9305476487a2a4e0ba4d05617e7cd60bb72f131060913fbec5",
+      "generated_files": [
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/prisma/schema.prisma",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/resources/TaskResource.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/policies/TaskPolicy.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/test/generated/Task.spec.ts",
+        "/Users/brunocipolla/Documents/GitHub/agentcode/agentcode-template/server-nestjs/src/seeders/TaskSeeder.ts"
+      ],
+      "generated_at": "2026-04-15T01:49:18.785Z"
+    }
+  }
+}
