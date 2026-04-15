@@ -105,6 +105,28 @@ async function main() {
     }
   }
 
+  // --------- Comments (demonstrates UUID primary key — AC-7) ---------
+  const firstTask = await prisma.task.findFirst({ where: { title: 'Design homepage' } });
+  if (firstTask) {
+    const existingComment = await prisma.comment.findFirst({ where: { taskId: firstTask.id } });
+    if (!existingComment) {
+      await prisma.comment.create({
+        data: {
+          taskId: firstTask.id,
+          userId: userByEmail['carol@acme.com'].id,
+          body: 'Started wireframes — sharing a Figma link in the morning.',
+        },
+      });
+      await prisma.comment.create({
+        data: {
+          taskId: firstTask.id,
+          userId: userByEmail['alice@acme.com'].id,
+          body: 'Nice, looking forward to it.',
+        },
+      });
+    }
+  }
+
   // --------- Labels (Acme) ---------
   const labels = [
     { name: 'bug',           color: '#dc3545' },

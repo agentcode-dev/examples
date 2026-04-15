@@ -13,7 +13,7 @@ const validationStore: Record<string, z.ZodTypeAny> = {
   owner: z.object({
     title: z.string(),
     description: z.string().nullable().optional(),
-    status: z.string(),
+    status: z.string().optional(),
     budget: z.number().nullable().optional(),
     internalNotes: z.string().nullable().optional(),
     startsAt: z.string().datetime({ offset: true }).or(z.date()).nullable().optional(),
@@ -22,7 +22,7 @@ const validationStore: Record<string, z.ZodTypeAny> = {
   admin: z.object({
     title: z.string(),
     description: z.string().nullable().optional(),
-    status: z.string(),
+    status: z.string().optional(),
     budget: z.number().nullable().optional(),
     internalNotes: z.string().nullable().optional(),
     startsAt: z.string().datetime({ offset: true }).or(z.date()).nullable().optional(),
@@ -31,7 +31,7 @@ const validationStore: Record<string, z.ZodTypeAny> = {
   manager: z.object({
     title: z.string(),
     description: z.string().nullable().optional(),
-    status: z.string(),
+    status: z.string().optional(),
     startsAt: z.string().datetime({ offset: true }).or(z.date()).nullable().optional(),
     endsAt: z.string().datetime({ offset: true }).or(z.date()).nullable().optional(),
   }),
