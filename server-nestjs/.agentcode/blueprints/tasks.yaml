@@ -5,6 +5,15 @@ options:
   belongs_to_organization: false
   soft_deletes: true
   audit_trail: true
+  # BP-004 in @agentcode-dev/agentcode-nestjs@0.2.0: declare indirect
+  # tenancy via owner_chain. Task → Project → Organization.
+  owner_chain: project
+
+# BP-004: cross-tenant FK validation — projectId must resolve to an
+# in-org project; assignedTo must exist as a user.
+fk_constraints:
+  projectId: project
+  assignedTo: user
 
 columns:
   title:

@@ -11,16 +11,16 @@ import { LabelPolicy } from '../policies/LabelPolicy';
 
 const validationStore: Record<string, z.ZodTypeAny> = {
   owner: z.object({
-    name: z.string().optional(),
-    color: z.string().optional(),
+    name: z.string(),
+    color: z.string().nullable().optional(),
   }),
   admin: z.object({
-    name: z.string().optional(),
-    color: z.string().optional(),
+    name: z.string(),
+    color: z.string().nullable().optional(),
   }),
   manager: z.object({
-    name: z.string().optional(),
-    color: z.string().optional(),
+    name: z.string(),
+    color: z.string().nullable().optional(),
   }),
   member: z.object({}),
   viewer: z.object({}),
@@ -29,15 +29,15 @@ const validationStore: Record<string, z.ZodTypeAny> = {
 const validationUpdate: Record<string, z.ZodTypeAny> = {
   owner: z.object({
     name: z.string().optional(),
-    color: z.string().optional(),
+    color: z.string().nullable().optional(),
   }),
   admin: z.object({
     name: z.string().optional(),
-    color: z.string().optional(),
+    color: z.string().nullable().optional(),
   }),
   manager: z.object({
     name: z.string().optional(),
-    color: z.string().optional(),
+    color: z.string().nullable().optional(),
   }),
   member: z.object({}),
   viewer: z.object({}),
@@ -58,4 +58,5 @@ export const labelsRegistration: ModelRegistration = {
   belongsToOrganization: true,
   softDeletes: true,
   hasAuditTrail: false,
+  exceptActions: ["forceDelete"],
 };

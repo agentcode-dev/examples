@@ -11,20 +11,20 @@ import { CommentPolicy } from '../policies/CommentPolicy';
 
 const validationStore: Record<string, z.ZodTypeAny> = {
   owner: z.object({
-    body: z.string().optional(),
-    taskId: z.number().int().optional(),
+    body: z.string(),
+    taskId: z.number().int(),
   }),
   admin: z.object({
-    body: z.string().optional(),
-    taskId: z.number().int().optional(),
+    body: z.string(),
+    taskId: z.number().int(),
   }),
   manager: z.object({
-    body: z.string().optional(),
-    taskId: z.number().int().optional(),
+    body: z.string(),
+    taskId: z.number().int(),
   }),
   member: z.object({
-    body: z.string().optional(),
-    taskId: z.number().int().optional(),
+    body: z.string(),
+    taskId: z.number().int(),
   }),
   viewer: z.object({}),
 };
@@ -57,4 +57,7 @@ export const commentsRegistration: ModelRegistration = {
   belongsToOrganization: false,
   softDeletes: true,
   hasAuditTrail: false,
+  hasUuid: true,
+  owner: "task.project",
+  fkConstraints: [{"field":"taskId","model":"task"},{"field":"userId","model":"user"}],
 };

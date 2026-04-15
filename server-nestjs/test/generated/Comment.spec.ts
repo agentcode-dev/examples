@@ -31,7 +31,7 @@ function makeUser(role: string, perms: string[] = [], orgId = 1) {
 }
 
 const sampleRow = {
-  "id": 1,
+  "id": "00000000-0000-0000-0000-000000000001",
   "body": "sample text",
   "taskId": 1,
   "userId": 1
@@ -52,11 +52,11 @@ describe('Comment resource', () => {
   });
 
   it('show returns a single record by id', async () => {
-    const env = buildEnv(makeConfig(), { comment: [{ ...sampleRow, id: 1 }] });
+    const env = buildEnv(makeConfig(), { comment: [{ ...sampleRow, id: '00000000-0000-0000-0000-000000000001' }] });
     const user = makeUser('admin', adminPerms);
     const req = { user, organization: { id: 1 } } as any;
-    const res: any = await env.controllers.global.show('comments', '1', {}, req);
-    expect(res).toMatchObject({ id: 1 });
+    const res: any = await env.controllers.global.show('comments', '00000000-0000-0000-0000-000000000001', {}, req);
+    expect(res).toMatchObject({ id: '00000000-0000-0000-0000-000000000001' });
   });
 
   it('store persists a new record', async () => {
@@ -70,19 +70,19 @@ describe('Comment resource', () => {
   });
 
   it('update modifies an existing record', async () => {
-    const env = buildEnv(makeConfig(), { comment: [{ ...sampleRow, id: 1 }] });
+    const env = buildEnv(makeConfig(), { comment: [{ ...sampleRow, id: '00000000-0000-0000-0000-000000000001' }] });
     const user = makeUser('admin', adminPerms);
     const req = { user, organization: { id: 1 } } as any;
     const body = {"body":"sample text"};
-    const res: any = await env.controllers.global.update('comments', '1', body, req);
+    const res: any = await env.controllers.global.update('comments', '00000000-0000-0000-0000-000000000001', body, req);
     expect(res).toBeDefined();
   });
 
   it('destroy removes (or soft-deletes) the record', async () => {
-    const env = buildEnv(makeConfig(), { comment: [{ ...sampleRow, id: 1 }] });
+    const env = buildEnv(makeConfig(), { comment: [{ ...sampleRow, id: '00000000-0000-0000-0000-000000000001' }] });
     const user = makeUser('admin', adminPerms);
     const req = { user, organization: { id: 1 } } as any;
-    await env.controllers.global.destroy('comments', '1', req);
+    await env.controllers.global.destroy('comments', '00000000-0000-0000-0000-000000000001', req);
     const rows = env.client._data.comment ?? [];
     const active = rows.filter((r: any) => !r.deletedAt);
     expect(active).toHaveLength(0);

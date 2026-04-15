@@ -1,53 +1,43 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
-import { applyAgentCodeRouting } from '@agentcode-dev/agentcode-nestjs';
-import { PrismaClient } from '@prisma/client';
+import {
+  AGENTCODE_CONFIG,
+  AGENTCODE_PRISMA_CLIENT,
+  AuthService,
+  applyAgentCodeRouting,
+  createTenantRouteRewrite,
+} from '@agentcode-dev/agentcode-nestjs';
 
 import { AppModule } from './app.module';
 
-const tenantPrisma = new PrismaClient();
-const orgCache = new Map<string, any>();
-
-/**
- * Raw-Express tenant rewrite middleware.
- *
- * Workaround for library bug BP-001: `routeGroups.tenant.prefix: ':organization'`
- * is configured but the library never registers GlobalController routes under
- * that dynamic prefix. Nest sees routes as `/api/:modelSlug`, not
- * `/api/:organization/:modelSlug`.
- *
- * This must run BEFORE Nest's router picks the handler, so it's installed
- * via `app.use(...)` in bootstrap, NOT via NestModule.configure().
- *
- * Behavior: if URL matches `/api/<slug>/...` and `<slug>` is a known org slug,
- * attach req.organization and rewrite req.url to drop the slug so the
- * GlobalController still matches.
- */
-async function tenantRewrite(req: any, _res: any, next: any) {
-  const raw = String(req.url ?? '').split('?')[0];
-  const query = String(req.url ?? '').slice(raw.length);
-
-  const m = raw.match(/^\/api\/([^/]+)(\/.*)?$/);
-  if (!m) return next();
-  const first = m[1];
-  if (['auth', 'invitations', 'nested'].includes(first)) return next();
-
-  let org = orgCache.get(first);
-  if (org === undefined) {
-    org = (await tenantPrisma.organization.findUnique({ where: { slug: first } })) ?? null;
-    orgCache.set(first, org);
-  }
-  if (!org) return next();
-
-  req.organization = org;
-  req.__orgSlug = first;
-  req.url = `/api${m[2] ?? ''}` + query;
-  next();
-}
-
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.use(tenantRewrite);
+
+  const config = app.get(AGENTCODE_CONFIG);
+  const prisma = app.get(AGENTCODE_PRISMA_CLIENT);
+  const auth = app.get(AuthService);
+
+  // Parse the Bearer token at the Express layer so req.user is set before
+  // createTenantRouteRewrite runs its membership check. Without this, Nest's
+  // JwtAuthGuard (which populates req.user) fires AFTER the tenant rewrite
+  // is done, so cross-tenant access would return 403 from the policy guard
+  // instead of 404 (PRD AC-1 parity with Laravel).
+  app.use(async (req: any, _res: any, next: any) => {
+    const header = String(req.headers?.authorization ?? '');
+    const [scheme, token] = header.split(' ');
+    if (scheme === 'Bearer' && token) {
+      try {
+        const payload = auth.verifyToken(token);
+        req.user = { id: payload.sub };
+      } catch {
+        /* invalid token — JwtAuthGuard produces a 401 later */
+      }
+    }
+    next();
+  });
+
+  app.use(createTenantRouteRewrite({ prisma, config }));
+
   applyAgentCodeRouting(app, { prefix: 'api' });
   const port = Number(process.env.PORT ?? 8004);
   await app.listen(port);

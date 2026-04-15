@@ -12,10 +12,10 @@ export async function seed(): Promise<void> {
   console.log('Seeding Comment...');
 
   await prisma.comment.upsert({
-    where: { id: 1 },
+    where: { id: '00000000-0000-0000-0000-000000000001' },
     update: {},
     create: {
-      id: 1,
+      id: "00000000-0000-0000-0000-000000000001",
       body: "Sample Body content for row 1.",
       taskId: 1,
       userId: 1,
@@ -23,10 +23,10 @@ export async function seed(): Promise<void> {
   });
 
   await prisma.comment.upsert({
-    where: { id: 2 },
+    where: { id: '00000000-0000-0000-0000-000000000002' },
     update: {},
     create: {
-      id: 2,
+      id: "00000000-0000-0000-0000-000000000002",
       body: "Sample Body content for row 2.",
       taskId: 1,
       userId: 1,
@@ -34,10 +34,10 @@ export async function seed(): Promise<void> {
   });
 
   await prisma.comment.upsert({
-    where: { id: 3 },
+    where: { id: '00000000-0000-0000-0000-000000000003' },
     update: {},
     create: {
-      id: 3,
+      id: "00000000-0000-0000-0000-000000000003",
       body: "Sample Body content for row 3.",
       taskId: 1,
       userId: 1,

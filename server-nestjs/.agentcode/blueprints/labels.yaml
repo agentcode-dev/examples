@@ -5,6 +5,7 @@ options:
   belongs_to_organization: true
   soft_deletes: true
   audit_trail: false
+  except_actions: [forceDelete] # PRD AC-9 — force-delete on labels is disabled
 
 columns:
   name:
